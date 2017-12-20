@@ -81,9 +81,8 @@
     </div>
     <div class="container">
         <form class="frm" id="authorsForm" name="authorsForm">
-            <h2>Create an FAQ</h2>
+            <h2>Edit FAQ</h2>
             <div class="form-group">
-                <label for="categories">Category</label><br>
                 <select name="categories" id="cat">
 
                 </select>
@@ -112,19 +111,19 @@
     <script src="http://sabioapi2.azurewebsites.net/scripts/sabio.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/jquery.validate.min.js"></script>
     <script type="text/javascript">
-        let creation = true;
         sabio.page.startUp = () => {
             sabio.page.initializeValidation();
+            $(".container").show("slow");
             $(".logout").on("click", sabio.page.handlers.logout);
             sabio.page.getCategories(sabio.page.onCategorySuccess, sabio.page.onError)
             $("#submit").on("click", sabio.page.handlers.createFaq);
         }
 
         sabio.page.handlers.createFaq = () => {
-            if ($("#authorsForm").valid() && creation) {
+            if ($("#authorsForm").valid()) {
                 let faq = sabio.page.capturedData();
                 sabio.page.createFaq(faq, sabio.page.onCreateSuccess, sabio.page.onError);
-            } 
+            }
         }
 
         sabio.page.handlers.logout = () => {
@@ -185,17 +184,17 @@
         };
 
         sabio.page.onSuccess = (data) => {
+            console.log(data);
             $(".user").text("Welcome, " + data.item.firstName + "!");
         }
 
-        sabio.page.onError = (data, error) => {
-            console.log(data, error);
+        sabio.page.onError = (data) => {
+            console.log(data);
             window.location.replace("login.html");
         }
 
         sabio.page.onCreateSuccess = (data) => {
-            alert("FAQ has been added successfully! You can edit on the index page.");
-            window.location.replace("faq.html");
+            console.log(data);
         }
 
         sabio.page.onLogoutSuccess = () => {
@@ -208,7 +207,6 @@
             for (let i = 0; i < items.length; i++) {
                 $("#cat").append('<option value="' + items[i].id + '">' + items[i].name + '</option>');
             };
-            $(".container").show("slow");
         }
 
         sabio.page.capturedData = () => {

@@ -24,6 +24,9 @@
     #submit {
         color: white;
         background-color: green;
+        margin: 20px;
+        margin-right: 120px;
+        float: right;
     }
     /* Add a black background color to the top navigation */
 
@@ -67,6 +70,51 @@
         float: right;
     }
 
+    .faqHeader {
+        font-size: 22px;
+        margin: 20px;
+    }
+
+    .panel-heading [data-toggle="collapse"]:after {
+        font-family: 'Glyphicons Halflings';
+        content: "\e072";
+        /* "play" icon */
+        float: right;
+        color: green;
+        font-size: 18px;
+        line-height: 22px;
+        /* rotate "play" icon from > (right arrow) to down arrow */
+        -webkit-transform: rotate(-90deg);
+        -moz-transform: rotate(-90deg);
+        -ms-transform: rotate(-90deg);
+        -o-transform: rotate(-90deg);
+        transform: rotate(-90deg);
+    }
+
+    .panel-heading [data-toggle="collapse"].collapsed:after {
+        /* rotate "play" icon from > (right arrow) to ^ (up arrow) */
+        -webkit-transform: rotate(90deg);
+        -moz-transform: rotate(90deg);
+        -ms-transform: rotate(90deg);
+        -o-transform: rotate(90deg);
+        transform: rotate(90deg);
+        color: #333;
+    }
+
+    #edit,
+    #delete {
+        margin-left: 4px;
+        margin-right: 4px;
+        padding: auto;
+    }
+
+    .panel-body {
+        font-size: 15px;
+    }
+
+    .modal-content {
+        padding: 10px;
+    }
 </style>
 
 <body>
@@ -76,26 +124,96 @@
         <a href="#quizzes">My Quizzes</a>
         <a href="#" class="right logout">Logout</a>
     </div>
-    <div class="container">
-        <form class="frm" id="authorsForm" name="authorsForm">
-            <button id="submit" type="button" class="btn btn-default">Create an FAQ</button>
+    <button id="submit" type="button" class="btn btn-default">Add an FAQ</button>
+    <br>
+    <br>
+    <div class="container" style="display: none">
+        <!-- AJAX FAQ goes HERE! -->
+        <div class="faqHeader" id=1>General Questions</div>
+        <div class="faqHeader" id=2>VIP Questions</div>
+        <div class="faqHeader" id=3>Guard Questions</div>
+        <div class="faqHeader" id=4>Security Specialist Questions</div>
+        <div class="faqHeader" id=5>Financing Questions</div>
+        <div class="faqHeader" id=6>Corporate Questions</div>
+        <div class="faqHeader" id=7>Specific Questions</div>
     </div>
-    
-    
+
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Edit FAQ</h4>
+                </div>
+                <div class="form-group">
+                        <label for="question">Question</label>
+                        <input type="text" name="question" class="form-control" placeholder="Question...?" id="question" />
+                    </div>
+                    <div class="form-group">
+                        <label for="answer">Answer</label>
+                        <input type="text" name="answer" class="form-control" placeholder="Answer..." id="answer" />
+                    </div>
+                    <div class="form-group">
+                        <label for="displayOrder">Display Order</label>
+                        <input type="text" name="displayOrder" class="form-control" placeholder="Display Order #" id="displayOrder" />
+                    </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" id="update">Edit</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <script src="http://sabioapi2.azurewebsites.net/scripts/sabio.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.3.0/mustache.js"></script>
+
     <script type="text/javascript">
+        let id = 0;
+        let faqCategoryId = 0;
         sabio.page.startUp = () => {
+            sabio.page.getFaqs(sabio.page.onGetSuccess, sabio.page.onError);
             $(".container").show("slow");
             $(".logout").on("click", sabio.page.handlers.logout);
             $("#submit").on("click", sabio.page.redirectCreate);
-            sabio.page.getFaqs(sabio.page.onGetSuccess, sabio.page.onError);
+            $(document).on("click", "#edit", sabio.page.handlers.edit)
+            $(document).on("click", "#delete", sabio.page.handlers.delete)
+            $("#update").on("click", sabio.page.handlers.update)
         }
 
         sabio.page.handlers.logout = () => {
             sabio.page.logout(sabio.page.onLogoutSuccess, sabio.page.onError);
+        }
+
+        sabio.page.handlers.edit = function () {
+            id = $(this).closest(".panel-collapse").attr("id");
+            sabio.page.modalVals();
+        }
+
+        sabio.page.handlers.delete = function () {
+            id = $(this).closest(".panel-collapse").attr("id");
+            sabio.page.deleteFaq(id, sabio.page.onDeleteSuccess, sabio.page.onError);
+        }
+
+        sabio.page.handlers.update = () => {
+            let faq = sabio.page.capturedData();
+            sabio.page.updateFaq(faq, sabio.page.onUpdateSuccess, sabio.page.onError);
+        }
+
+        sabio.page.capturedData = () => {
+            return {
+                question: $("#question").val(),
+                answer: $("#answer").val(),
+                displayOrder: $("#displayOrder").val(),
+                'id': id,
+                'faqCategoryId': faqCategoryId
+            }
         }
 
         sabio.page.logout = (onSuccess, onError) => {
@@ -105,6 +223,41 @@
                 contentType: "application/x-www-form-urlencoded; charset=UTF-8",
                 dataType: "json",
                 type: "GET",
+                xhrFields: {
+                    withCredentials: true
+                },
+                success: onSuccess,
+                error: onError
+            };
+
+            $.ajax(url, settings);
+        };
+
+        sabio.page.updateFaq = (data, onSuccess, onError) => {
+            let url = "https://pacoima-ypi.azurewebsites.net/api/faqs/" + id;
+            let settings = {
+                cache: false,
+                contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+                dataType: "json",
+                type: "PUT",
+                data,
+                xhrFields: {
+                    withCredentials: true
+                },
+                success: onSuccess,
+                error: onError
+            };
+
+            $.ajax(url, settings);
+        };
+
+        sabio.page.deleteFaq = (id, onSuccess, onError) => {
+            let url = "https://pacoima-ypi.azurewebsites.net/api/faqs/" + id;
+            let settings = {
+                cache: false,
+                contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+                dataType: "json",
+                type: "DELETE",
                 xhrFields: {
                     withCredentials: true
                 },
@@ -132,6 +285,28 @@
             $.ajax(url, settings);
         };
 
+        sabio.page.getFaqEdit = (id, onSuccess, onError) => {
+            let url = "https://pacoima-ypi.azurewebsites.net/api/faqs/" + id;
+            let settings = {
+                cache: false,
+                contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+                dataType: "json",
+                type: "GET",
+                xhrFields: {
+                    withCredentials: true
+                },
+                success: onSuccess,
+                error: onError
+            };
+
+            $.ajax(url, settings);
+        };
+
+        sabio.page.onDeleteSuccess = () => {
+            alert("FAQ deleted!");
+            location.reload();
+        }
+
         sabio.page.onSuccess = (data) => {
             console.log(data);
             $(".user").text("Welcome, " + data.item.firstName + "!");
@@ -139,7 +314,7 @@
 
         sabio.page.onError = (data) => {
             console.log(data);
-            window.location.replace("login.html");
+            
         }
 
         sabio.page.onLogoutSuccess = () => {
@@ -152,9 +327,41 @@
         }
 
         sabio.page.onGetSuccess = (data) => {
-            console.log(data);
+            let faqs = data.items;
+            faqs.sort((a,b) => {
+                return a.displayOrder - b.displayOrder;
+            });
+            for (let i = 0; i < faqs.length; i++) {
+                let catID = faqs[i].faqCategoryId;
+                let data = {
+                    question: faqs[i].question,
+                    answer: faqs[i].answer,
+                    id: faqs[i].id
+                };
+                $("#" + catID).append(Mustache.to_html(template, data));
+            }
+            $(".container").show("slow");
         }
 
+        sabio.page.onGetIDSuccess = (data) => {
+            $("#question").val(data.item.question);
+            $("#answer").val(data.item.answer);
+            $("#displayOrder").val(data.item.displayOrder);
+            faqCategoryId = data.item.faqCategoryId;
+            $("#myModal").modal();
+        }
+
+        sabio.page.onUpdateSuccess = () => {
+            alert("FAQ updated!");
+            location.reload();
+        }
+
+        sabio.page.modalVals = () => {
+            sabio.page.getFaqEdit(id, sabio.page.onGetIDSuccess, sabio.page.onError)
+        }
+
+        const template =
+            '<div class="panel panel-default" id="faq"><div class="panel-heading"><h4 class="panel-title"><a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#{{id}}">{{question}}</a></h4></div><div id="{{id}}" class="panel-collapse collapse"><div class="panel-body">{{answer}}<button id="edit" type="button" class="btn btn-warning">Edit</button><button id="delete" type="button" class="btn btn-danger">Delete</button></div></div></div>';
     </script>
 
 </body>
