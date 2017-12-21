@@ -13,6 +13,7 @@
     body {
         background-image: url(subtle_white_feathers.png);
     }
+
     #authorsForm {
         color: Green;
         background-color: #ddd;
@@ -73,6 +74,11 @@
     #cat {
         font-size: 18px;
     }
+
+    h2 {
+        color: green;
+        font-weight: bold;
+    }
 </style>
 
 <body>
@@ -82,31 +88,9 @@
         <a class="active" href="quiz.html">My Quizzes</a>
         <a href="#" class="right logout">Logout</a>
     </div>
+    <h2 class="text-center">My Quizzes</h2>
     <div class="container">
-        <form class="frm" id="authorsForm" name="authorsForm">
-            <h2>Create an FAQ</h2>
-            <div class="form-group">
-                <label for="categories">Category</label>
-                <br>
-                <select name="categories" id="cat">
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="question">Question</label>
-                <input type="text" name="question" class="form-control" placeholder="Question...?" id="question" />
-            </div>
-            <div class="form-group">
-                <label for="answer">Answer</label>
-                <input type="text" name="answer" class="form-control" placeholder="Answer..." id="answer" />
-            </div>
-            <div class="form-group">
-                <label for="displayOrder">Display Order</label>
-                <input type="text" name="displayOrder" class="form-control" placeholder="Display Order #" id="displayOrder" />
-            </div>
-            <div class="form-group">
-                <button id="submit" type="button" class="btn btn-default">Create</button>
-            </div>
-        </form>
+        <button id="submit" type="button" class="btn btn-default">Quiz Create/Edit</button>
     </div>
     </div>
 
@@ -117,8 +101,12 @@
     <script type="text/javascript">
         sabio.page.startUp = () => {
             $(".container").show("slow");
+            $("#submit").on("click", sabio.page.handlers.redirect)
         }
 
+        sabio.page.handlers.redirect = () => {
+            window.location.replace("createquiz.html");
+        }
     </script>
 
 </body>

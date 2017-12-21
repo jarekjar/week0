@@ -13,7 +13,7 @@
     body {
         background-image: url(subtle_white_feathers.png);
     }
-    
+
     #authorsForm {
         color: Green;
         background-color: #ddd;
@@ -123,6 +123,11 @@
     .modal-content {
         padding: 10px;
     }
+
+    h2 {
+        color: green;
+        font-weight: bold;
+    }
 </style>
 
 <body>
@@ -132,6 +137,7 @@
         <a href="quiz.html">My Quizzes</a>
         <a href="#" class="right logout">Logout</a>
     </div>
+    <h2 class="text-center">FAQ Index</h2>
     <button id="submit" type="button" class="btn btn-default">Add an FAQ</button>
     <br>
     <br>
@@ -187,7 +193,7 @@
         let faqCategoryId = 0;
         sabio.page.startUp = () => {
             sabio.page.getFaqs(sabio.page.onGetSuccess, sabio.page.onError);
-            $(".container").show("slow");
+           // $(".container").show("slow");
             $(".logout").on("click", sabio.page.handlers.logout);
             $("#submit").on("click", sabio.page.redirectCreate);
             $(document).on("click", "#edit", sabio.page.handlers.edit)
@@ -195,7 +201,7 @@
             $("#update").on("click", sabio.page.handlers.update)
         }
 
-        //*************EVENT*HANDLERS**************\\
+        //***************EVENT*HANDLERS****************\\
 
         sabio.page.handlers.logout = () => {
             sabio.page.logout(sabio.page.onLogoutSuccess, sabio.page.onError);

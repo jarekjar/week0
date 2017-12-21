@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title></title>
+    <title>Quite Create/Edit</title>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
@@ -13,26 +13,44 @@
     body {
         background-image: url(subtle_white_feathers.png);
     }
-    #authorsForm {
+
+    #authorsForm,
+    #authorsForm2 {
         color: Green;
         background-color: #ddd;
         padding: 20px;
         margin: 20px auto;
         overflow: auto;
-        width: 60%;
+        width: 50%;
         border-radius: 15px;
         box-shadow: 0px 15px 15px rgba(0, 0, 0, 0.5);
     }
 
-    #submit {
+    #authorsForm2 {
+        margin-left: 0px;
+    }
+
+    .btn {
         color: white;
         background-color: green;
+    }
+
+    #edit {
+        margin: 0;
+        padding: 0;
+        height: 22px;
+        width: 35px;
     }
     /* Add a black background color to the top navigation */
 
     .topnav {
         background-color: #333;
         overflow: hidden;
+    }
+
+    h2 {
+        color: green;
+        font-weight: bold;
     }
     /* Style the links inside the navigation bar */
 
@@ -64,15 +82,43 @@
 
     .container {
         display: none;
-        margin-top: 100px;
+        margin-top: 40px;
     }
 
     .topnav .right {
         float: right;
     }
 
-    #cat {
-        font-size: 18px;
+    #answerType,
+    #newAnswerType {
+        height: 28px;
+        width: 150px;
+    }
+
+    #employerID,
+    #timer {
+        width: 100px;
+    }
+
+    .table {
+        color: Green;
+        background-color: #ddd;
+        padding: 20px;
+        margin: 20px auto;
+        overflow: auto;
+        width: 60%;
+        border-radius: 15px;
+        box-shadow: 0px 15px 15px rgba(0, 0, 0, 0.5);
+        font-size: 15px;
+    }
+
+    th,
+    td {
+        text-align: center;
+    }
+
+    #update {
+        display: none;
     }
 </style>
 
@@ -83,41 +129,360 @@
         <a class="active" href="quiz.html">My Quizzes</a>
         <a href="#" class="right logout">Logout</a>
     </div>
+    <h2 class="text-center">Quiz Create and Edit</h2>
+    <button id="openForm" type="button" class="btn btn-default">Show/Hide Quiz Form</button>
     <div class="container">
-        <form class="frm" id="authorsForm" name="authorsForm">
-            <h2>Create a Quiz</h2>
+        <form class="frm" id="authorsForm" name="authorsForm" style="display: none">
+            <h2 id="quizC">Create a Quiz</h2>
             <div class="form-group">
                 <label for="qName">Quiz Name</label>
                 <input type="text" name="qName" class="form-control" placeholder="Quiz Name" id="qName" />
-                </div>
-            <div class="form-group">
-                <label for="question">Question</label>
-                <input type="text" name="question" class="form-control" placeholder="Question...?" id="question" />
             </div>
             <div class="form-group">
-                <label for="answer">Answer</label>
-                <input type="text" name="answer" class="form-control" placeholder="Answer..." id="answer" />
+                <label for="categories">Default Answer Type</label>
+                <br>
+                <select name="answerType" id="answerType">
+                    <option value="Single">Single</option>
+                    <option value="Multiple">Multiple</option>
+                    <option value="Open">Open</option>
+                </select>
             </div>
             <div class="form-group">
-                <label for="displayOrder">Display Order</label>
-                <input type="text" name="displayOrder" class="form-control" placeholder="Display Order #" id="displayOrder" />
+                <label for="pic">Cover Picture URL (optional)</label>
+                <input type="text" name="pic" class="form-control" id="pic" placeholder="https://..." />
+            </div>
+            <div class="form-group">
+                <label for="endPic">End Picture URL (optional)</label>
+                <input type="text" name="endPic" class="form-control" id="endPic" placeholder="https://..." />
+            </div>
+            <div class="form-group">
+                <input type="checkbox" name="randomQ" id="randomQ" />
+                <label for="randomQ">Randomize Questions</label>
+            </div>
+            <div class="form-group">
+                <input type="checkbox" name="randomA" id="randomA" />
+                <label for="randomA">Randomize Answers</label>
+            </div>
+            <div class="form-group">
+                <label for="timer">Timer (seconds) (optional)</label>
+                <input type="text" name="timer" class="form-control" id="timer" />
+            </div>
+            <div class="form-group">
+                <label for="employerID">EmployerID</label>
+                <input type="text" name="employerID" class="form-control" id="employerID" disabled/>
             </div>
             <div class="form-group">
                 <button id="submit" type="button" class="btn btn-default">Create</button>
+                <button id="update" type="button" class="btn btn-default">Update</button>
+                <button id="addQ" type="button" class="btn btn-default">Add Question</button>
+            </div>
+        </form>
+        <form class="frm2" id="authorsForm2" name="authorsForm" style="display: none">
+            <h2>Add Question</h2>
+            <div class="form-group">
+                <label for="q">Question</label>
+                <input type="text" name="q" class="form-control" placeholder="Question?" id="q" />
+            </div>
+            <div class="form-group">
+                <label for="categories">Answer Type</label>
+                <br>
+                <select name="newAnswerType" id="newAnswerType">
+                    <option value="Single">Single</option>
+                    <option value="Multiple">Multiple</option>
+                    <option value="Open">Open</option>
+                </select>
+            </div>
+            <div class="form-group" id="answerBox">
+                <div id="answer1">
+                <label for="answer1">Answer #1</label>
+                <input type="text" name="answer1" class="form-control answer"/>
+                </div>
+            </div>
+            <button type="button" class="btn btn-default btn-sm" id="addA">
+                <span class="glyphicon glyphicon-plus"></span>Answer
+            </button>
+            <button type="button" class="btn btn-default btn-sm" id="delA">
+                <span class="glyphicon glyphicon-minus"></span>Answer
+            </button>
+            <div class="form-group">
+                <label for="pic">Media URL (Optional)</label>
+                <input type="text" name="pic" class="form-control" id="pic" placeholder="https://..." />
+            </div>
+            <div class="form-group">
+                <button id="submitAnswer" type="button" class="btn btn-default">Create</button>
+                <button id="deleteAnswer" type="button" class="btn btn-default">Delete</button>
             </div>
         </form>
     </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Quiz #</th>
+                <th scope="col">Name</th>
+                <th scope="col">Active</th>
+                <th scope="col">Results</th>
+                <th scope="col">Edit</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+
+        </tbody>
+    </table>
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <script src="http://sabioapi2.azurewebsites.net/scripts/sabio.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.3.0/mustache.js"></script>
+
     <script type="text/javascript">
+        let eId = 0;
+        let currentQuizID = 0;
+        let num = 2;
         sabio.page.startUp = () => {
-            $(".container").show("slow");
+            $(".container").show("");
+            sabio.page.getIds(sabio.page.onGetIdSuccess, sabio.page.onError);
+            $("#submit").on("click", sabio.page.handlers.create)
+            $("#openForm").on("click", sabio.page.handlers.toggleForm)
+            sabio.page.initializeValidation();
+            $(document).on("click", "#edit", sabio.page.handlers.edit)
+            $("#update").on("click", sabio.page.handlers.update)
+            $("#addQ").on("click", sabio.page.handlers.addQ)
+            $("#addA").on("click", sabio.page.handlers.addAnswerInput)
+            $("#delA").on("click", sabio.page.handlers.delAnswerInput)
         }
 
+        sabio.page.handlers.addAnswerInput = () => {
+            $("#answerBox").append('<div id="answer' + num + '"><label for="answer' + num + '">Answer #' + num +
+                '</label><input type="text" name="answer' + num +
+                '" class="form-control answer"/></div>')
+            num++;
+        }
+
+        sabio.page.handlers.delAnswerInput = () => {
+            num--
+            if (num > 0){
+            $("#answer" + num).remove();
+            } else {
+                num++;
+            }
+        }
+
+        sabio.page.handlers.addQ = () => {
+            $(".frm2").show("fast");
+            $("#authorsForm").css("float", "left");
+            $("#authorsForm").css("margin-right", "0px");
+        }
+
+        sabio.page.handlers.edit = function () {
+            currentQuizID = $(this).closest("tr").attr("id");
+            sabio.page.getQuizForEdit(currentQuizID, sabio.page.onGetQuizFESuccess, sabio.page.onError);
+        }
+
+        sabio.page.handlers.update = () => {
+            let quiz = sabio.page.capturedData();
+            quiz.id = currentQuizID;
+            sabio.page.updateQuiz(quiz, sabio.page.onInsertSuccess, sabio.page.onError);
+        }
+
+        sabio.page.handlers.create = () => {
+            let quiz = sabio.page.capturedData();
+            if ($("#authorsForm").valid()) {
+                console.log(quiz);
+                sabio.page.insertQuiz(quiz, sabio.page.onInsertSuccess, sabio.page.onError);
+            }
+        }
+
+        sabio.page.handlers.toggleForm = () => {
+            $(".frm").toggle("fast");
+        }
+
+        sabio.page.updateQuiz = (data, onSuccess, onError) => {
+            let url = "https://pacoima-ypi.azurewebsites.net/api/quizzes/" + currentQuizID;
+            let settings = {
+                cache: false,
+                contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+                dataType: "json",
+                data: data,
+                type: "PUT",
+                xhrFields: {
+                    withCredentials: true
+                },
+                success: onSuccess,
+                error: onError
+            };
+            $.ajax(url, settings);
+        };
+
+        sabio.page.getIds = (onSuccess, onError) => {
+            let url = "https://pacoima-ypi.azurewebsites.net/api/users/ids";
+            let settings = {
+                cache: false,
+                contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+                dataType: "json",
+                type: "GET",
+                xhrFields: {
+                    withCredentials: true
+                },
+                success: onSuccess,
+                error: onError
+            };
+            $.ajax(url, settings);
+        };
+
+        sabio.page.getQuizForEdit = (id, onSuccess, onError) => {
+            let url = "https://pacoima-ypi.azurewebsites.net/api/quizzes/" + id;
+            let settings = {
+                cache: false,
+                contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+                dataType: "json",
+                type: "GET",
+                xhrFields: {
+                    withCredentials: true
+                },
+                success: onSuccess,
+                error: onError
+            };
+            $.ajax(url, settings);
+        };
+
+
+        sabio.page.insertQuiz = (data, onSuccess, onError) => {
+            let url = "https://pacoima-ypi.azurewebsites.net/api/quizzes/";
+            let settings = {
+                cache: false,
+                contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+                dataType: "json",
+                data: data,
+                type: "POST",
+                xhrFields: {
+                    withCredentials: true
+                },
+                success: onSuccess,
+                error: onError
+            };
+            $.ajax(url, settings);
+        };
+
+        sabio.page.getQuiz = (onSuccess, onError) => {
+            let url = "https://pacoima-ypi.azurewebsites.net/api/quizzes/employer/" + eId;
+            console.log(url);
+            let settings = {
+                cache: false,
+                contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+                dataType: "json",
+                type: "GET",
+                xhrFields: {
+                    withCredentials: true
+                },
+                success: onSuccess,
+                error: onError
+            };
+            $.ajax(url, settings);
+        };
+
+        sabio.page.onGetQuizFESuccess = (data) => {
+            console.log(data);
+            $("#qName").val(data.item.quizName);
+            $("#pic").val(data.item.coverPage),
+                $("#endPic").val(data.item.endPage),
+                $("#answerType").val(data.item.defaultAnswerType),
+                $("#timer").val(data.item.timer)
+            $("#update").show();
+            $("#submit").hide();
+            $(".frm").show("fast");
+            $("#quizC").text("Update this Quiz");
+        }
+
+        sabio.page.onGetQuizSuccess = (data) => {
+            console.log(data);
+            sabio.page.domQuiz(data);
+        }
+
+        sabio.page.onGetIdSuccess = (data) => {
+            console.log(data);
+            eId = data.item.employerId;
+            $("#employerID").val(data.item.employerId);
+            sabio.page.getQuiz(sabio.page.onGetQuizSuccess, sabio.page.onError)
+        }
+
+        sabio.page.onInsertSuccess = (data) => {
+            console.log(data);
+            $("#submit").show();
+            $("#update").hide();
+            $("#quizC").text("Create a Quiz");
+            sabio.page.handlers.toggleForm();
+            $("#tableBody").html("");
+            sabio.page.getQuiz(sabio.page.onGetQuizSuccess, sabio.page.onError)
+        }
+
+        sabio.page.onError = (data) => {
+            console.log(data);
+            alert(data.responseJSON);
+        }
+
+        sabio.page.capturedData = () => {
+            let quiz = {
+                "quizName": $("#qName").val(),
+                "coverPage": $("#pic").val(),
+                "endPage": $("#endPic").val(),
+                "defaultAnswerType": $("#answerType").val(),
+                "timer": $("#timer").val(),
+                "randomizeQuestions": $("#randomQ").is(":checked"),
+                "randomizeAnswers": $("#randomA").is(":checked"),
+                "employerId": $("#employerID").val()
+            }
+            for (let key in quiz) {
+                console.log(quiz[key]);
+                if (quiz[key] === "") {
+                    delete quiz[key];
+                }
+            }
+            return quiz;
+        }
+
+        sabio.page.initializeValidation = () => {
+            $.validator.setDefaults({
+                debug: true
+            });
+            let validationRules = {
+                "qName": {
+                    required: true
+                },
+
+                "answerType": {
+                    required: true
+                }
+            };
+            let validationMessages = {
+                "qName": {
+                    required: "I need a quiz name."
+                }
+            };
+            let validationOptions = {
+                rules: validationRules,
+                messages: validationMessages
+            };
+            $("#authorsForm").validate(validationOptions);
+        }
+
+        sabio.page.domQuiz = (data) => {
+            for (let i = 0; i < data.items.length; i++) {
+                let quiz = {
+                    id: data.items[i].id,
+                    num: (i + 1),
+                    quizName: data.items[i].quizName,
+                    active: data.items[i].isActive,
+                    results: data.items[i].resultsCount
+                }
+                let html = Mustache.to_html(template, quiz);
+                $("#tableBody").append(html);
+            }
+        }
+
+        const template =
+            '<tr id="{{id}}"><th scope="row">{{num}}</th><td>{{quizName}}</td><td>{{active}}</td><td>{{results}}</td><td><button id="edit" type="button" class="btn btn-default">Edit</button></td></tr>';
     </script>
 
 </body>
