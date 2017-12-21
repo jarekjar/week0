@@ -25,6 +25,7 @@
         color: white;
         background-color: green;
         margin: 20px;
+        margin-top: 40px;
         margin-right: 120px;
         float: right;
     }
@@ -64,6 +65,8 @@
 
     .container {
         display: none;
+        margin-top: 60px;
+        width: 600px;
     }
 
     .topnav .right {
@@ -101,6 +104,7 @@
         color: #333;
     }
 
+
     #edit,
     #delete {
         margin-left: 4px;
@@ -121,7 +125,7 @@
     <div class="topnav" id="myTopnav">
         <a href="home.html">Home</a>
         <a class="active" href="#">My FAQ's</a>
-        <a href="#quizzes">My Quizzes</a>
+        <a href="quiz.html">My Quizzes</a>
         <a href="#" class="right logout">Logout</a>
     </div>
     <button id="submit" type="button" class="btn btn-default">Add an FAQ</button>
@@ -149,17 +153,17 @@
                     <h4 class="modal-title">Edit FAQ</h4>
                 </div>
                 <div class="form-group">
-                        <label for="question">Question</label>
-                        <input type="text" name="question" class="form-control" placeholder="Question...?" id="question" />
-                    </div>
-                    <div class="form-group">
-                        <label for="answer">Answer</label>
-                        <input type="text" name="answer" class="form-control" placeholder="Answer..." id="answer" />
-                    </div>
-                    <div class="form-group">
-                        <label for="displayOrder">Display Order</label>
-                        <input type="text" name="displayOrder" class="form-control" placeholder="Display Order #" id="displayOrder" />
-                    </div>
+                    <label for="question">Question</label>
+                    <input type="text" name="question" class="form-control" placeholder="Question...?" id="question" />
+                </div>
+                <div class="form-group">
+                    <label for="answer">Answer</label>
+                    <input type="text" name="answer" class="form-control" placeholder="Answer..." id="answer" />
+                </div>
+                <div class="form-group">
+                    <label for="displayOrder">Display Order</label>
+                    <input type="text" name="displayOrder" class="form-control" placeholder="Display Order #" id="displayOrder" />
+                </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal" id="update">Edit</button>
                 </div>
@@ -187,6 +191,8 @@
             $("#update").on("click", sabio.page.handlers.update)
         }
 
+        //*************EVENT*HANDLERS**************\\
+
         sabio.page.handlers.logout = () => {
             sabio.page.logout(sabio.page.onLogoutSuccess, sabio.page.onError);
         }
@@ -206,15 +212,7 @@
             sabio.page.updateFaq(faq, sabio.page.onUpdateSuccess, sabio.page.onError);
         }
 
-        sabio.page.capturedData = () => {
-            return {
-                question: $("#question").val(),
-                answer: $("#answer").val(),
-                displayOrder: $("#displayOrder").val(),
-                'id': id,
-                'faqCategoryId': faqCategoryId
-            }
-        }
+        //******************AJAX*CALLS*******************\\
 
         sabio.page.logout = (onSuccess, onError) => {
             let url = "https://pacoima-ypi.azurewebsites.net/api/users/logout";
@@ -302,6 +300,8 @@
             $.ajax(url, settings);
         };
 
+        //*************CALLBACK*FUNCTIONS***********\\
+
         sabio.page.onDeleteSuccess = () => {
             alert("FAQ deleted!");
             location.reload();
@@ -314,7 +314,7 @@
 
         sabio.page.onError = (data) => {
             console.log(data);
-            
+
         }
 
         sabio.page.onLogoutSuccess = () => {
@@ -328,7 +328,7 @@
 
         sabio.page.onGetSuccess = (data) => {
             let faqs = data.items;
-            faqs.sort((a,b) => {
+            faqs.sort((a, b) => {
                 return a.displayOrder - b.displayOrder;
             });
             for (let i = 0; i < faqs.length; i++) {
@@ -356,11 +356,25 @@
             location.reload();
         }
 
+        //*************OTHER*FUNCTIONS*******************\\
+
         sabio.page.modalVals = () => {
             sabio.page.getFaqEdit(id, sabio.page.onGetIDSuccess, sabio.page.onError)
         }
 
+        sabio.page.capturedData = () => {
+            return {
+                question: $("#question").val(),
+                answer: $("#answer").val(),
+                displayOrder: $("#displayOrder").val(),
+                'id': id,
+                'faqCategoryId': faqCategoryId
+            }
+        }
+
+
         const template =
+
             '<div class="panel panel-default" id="faq"><div class="panel-heading"><h4 class="panel-title"><a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#{{id}}">{{question}}</a></h4></div><div id="{{id}}" class="panel-collapse collapse"><div class="panel-body">{{answer}}<button id="edit" type="button" class="btn btn-warning">Edit</button><button id="delete" type="button" class="btn btn-danger">Delete</button></div></div></div>';
     </script>
 

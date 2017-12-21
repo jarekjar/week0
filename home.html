@@ -91,7 +91,6 @@
             $(".container").show("slow");
             sabio.page.checklog(sabio.page.onSuccess, sabio.page.onError);
             $(".logout").on("click", sabio.page.handlers.logout);
-            sabio.page.profileinfo(sabio.page.onProfileSuccess, sabio.page.onError);
         }
 
         //*************HANDLERS****************\\
@@ -104,23 +103,6 @@
 
         sabio.page.checklog = (onSuccess, onError) => {
             let url = "https://pacoima-ypi.azurewebsites.net/api/people/currentuser";
-            let settings = {
-                cache: false,
-                contentType: "application/x-www-form-urlencoded; charset=UTF-8",
-                dataType: "json",
-                type: "GET",
-                xhrFields: {
-                    withCredentials: true
-                },
-                success: onSuccess,
-                error: onError
-            };
-
-            $.ajax(url, settings);
-        };
-
-        sabio.page.profileinfo = (onSuccess, onError) => {
-            let url = "https://pacoima-ypi.azurewebsites.net/api/profiles";
             let settings = {
                 cache: false,
                 contentType: "application/x-www-form-urlencoded; charset=UTF-8",
@@ -156,7 +138,6 @@
         //***********CALLBACK*FUNCTIONS****************\\
 
         sabio.page.onSuccess = (data) => {
-            
             $(".user").text("Welcome, " + data.item.firstName + " " + data.item.lastName + " !");
         }
 
@@ -168,10 +149,6 @@
         sabio.page.onLogoutSuccess = () => {
             alert("successfully logged out!");
             window.location.replace("login.html");
-        }
-
-        sabio.page.onProfileSuccess = (data) => {
-            
         }
 
     </script>

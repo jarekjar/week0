@@ -61,6 +61,7 @@
 
     .container {
         display: none;
+        margin-top: 80px;
     }
 
     .topnav .right {
@@ -76,14 +77,15 @@
     <div class="topnav" id="myTopnav">
         <a href="home.html">Home</a>
         <a class="active" href="faq.html">My FAQ's</a>
-        <a href="#quizzes">My Quizzes</a>
+        <a href="quiz.html">My Quizzes</a>
         <a href="#" class="right logout">Logout</a>
     </div>
     <div class="container">
         <form class="frm" id="authorsForm" name="authorsForm">
             <h2>Create an FAQ</h2>
             <div class="form-group">
-                <label for="categories">Category</label><br>
+                <label for="categories">Category</label>
+                <br>
                 <select name="categories" id="cat">
 
                 </select>
@@ -120,16 +122,20 @@
             $("#submit").on("click", sabio.page.handlers.createFaq);
         }
 
+        //*****************EVENT*HANDLERS*********************\\
+
         sabio.page.handlers.createFaq = () => {
             if ($("#authorsForm").valid() && creation) {
                 let faq = sabio.page.capturedData();
                 sabio.page.createFaq(faq, sabio.page.onCreateSuccess, sabio.page.onError);
-            } 
+            }
         }
 
         sabio.page.handlers.logout = () => {
             sabio.page.logout(sabio.page.onLogoutSuccess, sabio.page.onError);
         }
+
+        //*****************AJAX*CALLS*********************\\
 
         sabio.page.logout = (onSuccess, onError) => {
             let url = "https://pacoima-ypi.azurewebsites.net/api/users/logout";
@@ -184,6 +190,8 @@
             $.ajax(url, settings);
         };
 
+        //*****************CALLBACK FUNCTIONS*********************\\
+
         sabio.page.onSuccess = (data) => {
             $(".user").text("Welcome, " + data.item.firstName + "!");
         }
@@ -220,8 +228,10 @@
             }
         }
 
+        //*****************OTHER FUNCTIONS*********************\\
+
         sabio.page.initializeValidation = () => {
-                let validationRules = {
+            let validationRules = {
                 "categories": {
                     required: true
                 },
