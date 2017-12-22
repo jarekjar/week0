@@ -120,6 +120,7 @@
     #update {
         display: none;
     }
+    
 </style>
 
 <body>
@@ -193,9 +194,13 @@
                 </select>
             </div>
             <div class="form-group" id="answerBox">
+                <div id="openAnswer" style="display: none">
+                    <label for="openanswer">Open Answer</label>
+                    <input type="text" name="openAnswer" class="form-control answer" />
+                </div>
                 <div id="answer1">
-                <label for="answer1">Answer #1</label>
-                <input type="text" name="answer1" class="form-control answer"/>
+                    <label for="answer1">Answer #1</label>
+                    <input type="text" name="answer1" class="form-control answer" />
                 </div>
             </div>
             <button type="button" class="btn btn-default btn-sm" id="addA">
@@ -251,6 +256,20 @@
             $("#addQ").on("click", sabio.page.handlers.addQ)
             $("#addA").on("click", sabio.page.handlers.addAnswerInput)
             $("#delA").on("click", sabio.page.handlers.delAnswerInput)
+            $("#newAnswerType").on("change", sabio.page.handlers.answerType)
+        }
+
+        sabio.page.handlers.answerType = function () {
+            if ($(this).val() === "Open") {
+                $("#answer1").hide();
+                $("#openAnswer").show();
+                $(".btn-sm").hide();
+                console.log("open selected")
+            } else if ($(this).val() === "Single") {
+                $("#answer1").show();
+                $("#openAnswer").hide();   
+                $(".btn-sm").show();
+            }
         }
 
         sabio.page.handlers.addAnswerInput = () => {
@@ -262,8 +281,8 @@
 
         sabio.page.handlers.delAnswerInput = () => {
             num--
-            if (num > 0){
-            $("#answer" + num).remove();
+            if (num > 0) {
+                $("#answer" + num).remove();
             } else {
                 num++;
             }
