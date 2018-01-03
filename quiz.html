@@ -79,6 +79,19 @@
         color: green;
         font-weight: bold;
     }
+
+    .table {
+        color: Green;
+        background-color: #ddd;
+        padding: 20px;
+        margin: 20px auto;
+        overflow: auto;
+        width: 60%;
+        border-radius: 15px;
+        box-shadow: 0px 15px 15px rgba(0, 0, 0, 0.5);
+        font-size: 15px;
+    }
+
 </style>
 
 <body>
@@ -91,6 +104,20 @@
     <h2 class="text-center">My Quizzes</h2>
     <div class="container">
         <button id="submit" type="button" class="btn btn-default">Quiz Create/Edit</button>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Quiz #</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Active</th>
+                    <th scope="col">Results</th>
+                    <th scope="col">Take</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+
+            </tbody>
+        </table>
     </div>
     </div>
 
@@ -98,15 +125,57 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <script src="http://sabioapi2.azurewebsites.net/scripts/sabio.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/jquery.validate.min.js"></script>
+    <script src="ajax.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.3.0/mustache.js"></script>
     <script type="text/javascript">
+        let eId = 0;
         sabio.page.startUp = () => {
             $(".container").show("slow");
             $("#submit").on("click", sabio.page.handlers.redirect)
+            sabio.page.getIds(sabio.page.onGetIdSuccess, sabio.page.onError);
+            $(document).on("click", '.take', sabio.page.handlers.click)
+        }
+
+        sabio.page.handlers.click = () => {
+            currentQuizID = $(event.target).closest("tr").attr('id');
+            window.location = "takequiz.html?quizID=" + currentQuizID;
         }
 
         sabio.page.handlers.redirect = () => {
             window.location.replace("createquiz.html");
         }
+
+        sabio.page.onGetIdSuccess = (data) => {
+            console.log(data);
+            eId = data.item.employerId;
+            sabio.page.getQuiz(sabio.page.onGetQuizSuccess, sabio.page.onError)
+        }
+
+        sabio.page.onError = (data) => {
+            console.log(data.responseText);
+        }
+
+        sabio.page.onGetQuizSuccess = (data) => {
+            console.log(data);
+            sabio.page.domQuizs(data);
+        }
+
+        sabio.page.domQuizs = (data) => {
+            for (let i = 0; i < data.items.length; i++) {
+                let quiz = {
+                    id: data.items[i].id,
+                    num: (i + 1),
+                    quizName: data.items[i].quizName,
+                    active: data.items[i].isActive,
+                    results: data.items[i].resultsCount
+                }
+                let html = Mustache.to_html(template, quiz);
+                $("#tableBody").append(html);
+            }
+        }
+
+        const template =
+            '<tr id="{{id}}"><th scope="row">{{num}}</th><td>{{quizName}}</td><td>{{active}}</td><td>{{results}}</td><td><button id="take" type="button" class="btn btn-default take">Take Quiz</button></td></tr>';
     </script>
 
 </body>

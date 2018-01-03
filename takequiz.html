@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title></title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<style>
+    body {
+        background-image: url(subtle_white_feathers.png);
+    }
+
+    #authorsForm, #authorsForm2 {
+        color: Green;
+        background-color: #ddd;
+        padding: 20px;
+        margin: 20px auto;
+        overflow: auto;
+        width: 60%;
+        border-radius: 15px;
+        box-shadow: 0px 15px 15px rgba(0, 0, 0, 0.5);
+        text-align: center;
+        margin-top: 80px;
+    }
+
+    #submit {
+        color: white;
+        background-color: green;
+    }
+    /* Add a black background color to the top navigation */
+
+    .topnav {
+        background-color: #333;
+        overflow: hidden;
+    }
+    /* Style the links inside the navigation bar */
+
+    .topnav a {
+        float: left;
+        color: #f2f2f2;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+        font-size: 17px;
+    }
+    /* Change the color of links on hover */
+
+    .topnav a:hover {
+        background-color: #ddd;
+        color: black;
+    }
+    /* Add a color to the active/current link */
+
+    .topnav a.active {
+        background-color: #4CAF50;
+        color: white;
+    }
+
+    .logout {
+        float: right;
+        color: green;
+    }
+
+    .container {
+        display: none;
+    }
+
+    .topnav .right {
+        float: right;
+    }
+
+    #cat {
+        font-size: 18px;
+    }
+
+    h2 {
+        color: green;
+        font-weight: bold;
+    }
+
+    .table {
+        color: Green;
+        background-color: #ddd;
+        padding: 20px;
+        margin: 20px auto;
+        overflow: auto;
+        width: 60%;
+        border-radius: 15px;
+        box-shadow: 0px 15px 15px rgba(0, 0, 0, 0.5);
+        font-size: 15px;
+    }
+
+    .submit {
+        margin-top: 20px;
+    }
+</style>
+
+<body>
+    <div class="topnav" id="myTopnav">
+        <a href="home.html">Home</a>
+        <a href="faq.html">My FAQ's</a>
+        <a class="active" href="quiz.html">My Quizzes</a>
+        <a href="#" class="right logout">Logout</a>
+    </div>
+    <div class="container" style="display: none">
+        <form class="frm" id="authorsForm" name="authorsForm">
+            <div class="form-group">
+                <button id="submit" type="button" class="btn btn-default takeQuiz">Start New Quiz!</button>
+                <button id="submit" type="button" class="btn btn-default continue" style="display: none">Continue Quiz!</button>
+            </div>
+        </form>
+        <form class="frm" id="authorsForm2" name="authorsForm" style="display:none">
+            <div class="form-group">
+            </div>
+            <button id="submit" type="button" class="btn btn-default submit">Submit Answers!</button>
+        </form>
+    </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="http://sabioapi2.azurewebsites.net/scripts/sabio.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/jquery.validate.min.js"></script>
+    <script src="ajax.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.3.0/mustache.js"></script>
+    <script type="text/javascript">
+        let eId = 0;
+        let pId = 0;
+        let currentQId = 0;
+        sabio.page.startUp = () => {
+            sabio.page.getIds(sabio.page.ongetIdSuccess, sabio.page.onError)
+            $(".takeQuiz").on("click", sabio.page.startNewQuiz);
+            $(".continue").on("click", sabio.page.continueQuiz);
+            $(document).on("click", ".save", sabio.page.handlers.saveAnswer)
+            $(".submit").on('click', sabio.page.handlers.submit)
+        }
+
+        sabio.page.handlers.submit = () => {
+            const quizAnswers = {
+                "id": currentQId,
+            }
+        }
+
+        sabio.page.handlers.saveAnswer = () => {
+           const answer = {
+                openAnswer: [$(event.target).closest('.form-group').find('.answer').val()],
+                quizResultId: $(event.target).closest('.form-group').find('.answer').attr('id'),
+                questionId: [ $('.quiz').attr('id') ]
+           };
+           sabio.page.saveAnswer(answer, sabio.page.onSaveSuccess, sabio.page.onError)
+        }
+
+        sabio.page.onSaveSuccess = (data) => {
+            console.log(data);
+        }
+
+        sabio.page.continueQuiz = () => {
+            sabio.page.loadQuiz(currentQId, sabio.page.onLoadSuccess, sabio.page.onError);
+        }
+
+        sabio.page.ongetIdSuccess = (data) => {
+            pId = data.item.personId;
+            currentQId = sabio.page.getQuizID();
+            sabio.page.checkActive(pId, currentQId, sabio.page.onActive, sabio.page.onError);
+        }
+
+        sabio.page.onLoadSuccess = (data) => {
+            $("#authorsForm").hide();
+            $("#authorsForm2").show('fast');
+            $("#authorsForm2").append('<h2 id="' + data.item.id + '" class="quiz">' + data.item.quizName + '</h2>')
+            console.log(data);
+            for (let i = 0; i < data.item.questions.length; i++) {
+                let quiz = {
+                    question: data.item.questions[i].question,
+                    id: data.item.questions[i].id
+                }
+                let html = Mustache.to_html(quizQuestions, quiz);
+                $("#authorsForm2").append(html);
+                $(".submit").appendTo("#authorsForm2");
+            }
+
+            $(".frm2").show('fast');
+        }
+
+        sabio.page.startNewQuiz = () => {
+            const idz = {
+                "quizId": currentQId,
+                "personId": pId
+            };
+            sabio.page.insertNewResult(idz, sabio.page.onInsertSuccess, sabio.page.onError)
+            
+        }
+
+        sabio.page.onActive = (data) => {
+            $(".container").show("slow");
+            if (data.item) {
+                console.log(data.item);
+                $(".continue").show();
+                $("#authorsForm").append('<p>Quiz started on ' + data.item.startTime.split('T')[0] + ' at ' + data.item.startTime.split('T')[1] + '.</p>')
+                $("#authorsForm").prepend('<h2>' + data.item.quizName + ' Quiz in progress! Would you like to continue?</h2>')
+            } else {
+                $("#authorsForm").prepend('<h2>No quiz in progress!</h2>');
+            }
+        }
+
+        sabio.page.onInsertSuccess = (data) => {
+            $("#authorsForm").hide('fast');
+            $("#authorsForm2").show('fast');
+        }
+
+        sabio.page.onError = (data) => {
+            console.log(data);
+        }
+
+        sabio.page.getQuizID = () => {
+            const searchParams = new URLSearchParams(window.location.search);
+            return searchParams.get("quizID");
+        }
+
+        const quizQuestions = '<form class="frm2" style="display:none" id="authorsForm2" name="authorsForm"><div class="form-group"><h2>{{question}}</h2><input type="text" name="answer" class="form-control answer" id="{{id}}"/><br><button id="submit" type="button" class="btn btn-default save">Save Answer</button></div></form>';
+
+    </script>
+
+</body>
+
+</html>

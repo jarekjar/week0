@@ -30,8 +30,8 @@
         background-color: green;
         margin: 20px;
         margin-top: 40px;
-        margin-right: 120px;
-        float: right;
+        margin-left: 120px;
+        float: left;
     }
     /* Add a black background color to the top navigation */
 
@@ -336,7 +336,7 @@
 
         sabio.page.onGetSuccess = (data) => {
             let faqs = data.items;
-            faqs.sort((a, b) => {a.displayOrder - b.displayOrder;});
+            faqs.sort((a, b) => a.displayOrder - b.displayOrder);
             for (let i = 0; i < faqs.length; i++) {
                 let catID = faqs[i].faqCategoryId;
                 let data = {
@@ -380,7 +380,6 @@
 
 
         const template =
-
             '<div class="panel panel-default" id="faq"><div class="panel-heading"><h4 class="panel-title"><a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#{{id}}">{{question}}</a></h4></div><div id="{{id}}" class="panel-collapse collapse"><div class="panel-body">{{answer}}<button id="edit" type="button" class="btn btn-warning">Edit</button><button id="delete" type="button" class="btn btn-danger">Delete</button></div></div></div>';
             
     </script>
